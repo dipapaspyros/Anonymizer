@@ -1,7 +1,7 @@
 
 $(function() {
     /* Initially add remove form button */
-    $('.column-form').prepend('<span class="remove-form pull-right">x</span>');
+    $('.column-form').prepend('<span class="remove-form pull-right"><i class="fa fa-times"></i></span>');
 
     function on_option_input_change(selector) {
         $(selector).closest('.column-form').find('.option-input').closest('p').addClass('hidden');

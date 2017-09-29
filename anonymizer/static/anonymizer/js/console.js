@@ -1,9 +1,9 @@
 var ConfigurationConsole = {
     start: function(id) {
-        this.client_url = '/team-ideation-tools/anonymizer/connection/' + id + '/query/?q=';
+        this.client_url = '/anonymizer/connection/' + id + '/query/?q=';
     },
 
-    status: 'DEFAULT',
+    status: 'DEFAULT'
 };
 
 $(function() {

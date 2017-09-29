@@ -116,13 +116,6 @@ class Property:
         self.column = source.split('@')[0].split('.')[1]
 
         self.cache_match = cache_match
-        """
-        if self.column == "activity_name":
-            self.cache_match = "activitytracker_activity.activity_name@" + source.split('@')[1]
-            self.source = "activitytracker_performs.activity_key@" + source.split('@')[1]
-            self.table = self.source.split('@')[0].split('.')[0]
-            self.column = self.source.split('@')[0].split('.')[1]
-        """
         self.aggregate = aggregate
         self.filter_by = filter_by
         self.is_pk = is_pk
@@ -218,10 +211,15 @@ class Property:
                 self.options = []
                 for row in rows.fetchall():
                     option = row[0]
+                    if type(option) == str:
+                        option = option.decode('utf8')
+
                     if option is None:
                         label = '<No value>'
                     else:
                         label = option
+
+
                     self.options.append((option, label))
 
         return self.options
@@ -480,7 +478,14 @@ class PropertyManager:
 
                 # apply function and save the result
                 # must apply multiple times for list arguments
-                result[prop.name] = prop.fn(fn_args)
+                if len(fn_args) > 0 and \
+                        list(set([type(fn_argi) for fn_argi in fn_args])) == [list] and \
+                        len(list(set([len(fn_argi) for fn_argi in fn_args]))) == 1:
+                    result[prop.name] = []
+                    for idx in range(len(fn_args[0])):
+                        result[prop.name].append(prop.fn([fn_argi[idx] for fn_argi in fn_args]))
+                else:
+                    result[prop.name] = prop.fn(fn_args)
 
         # removed non-exposed properties
         for key in result.keys():
@@ -608,6 +613,14 @@ class PropertyManager:
     def order_by(self):
         return ' ORDER BY ' + self.user_pk.column
 
+    def flatten(self, res):
+        for r in res:
+            for key in r:
+                if type(r[key]) == list and len(r[key]) == 1:
+                    r[key] = r[key][0]
+
+        return res
+
     def all(self, true_id=False, start=None, end=None):
         # construct query
         t = datetime.now()
@@ -622,7 +635,7 @@ class PropertyManager:
         res = [self.info(row, true_id) for row in qs]
         t2 = datetime.now(); print 'Anonymizing: ' + str(t2 - t); t = t2
 
-        return res
+        return self.flatten(res)
 
     def filter(self, filters, true_id=False, start=None, end=None):
         t = datetime.now()
@@ -702,7 +715,7 @@ class PropertyManager:
         res = self.filter_by_generated(result, filters_generated)
         t2 = datetime.now(); print 'Filtering: ' + str(t2 - t); t = t2
 
-        return res
+        return self.flatten(res)
 
     def get(self, pk):
         where_clause = 'WHERE {0}={1}'.format(self.user_pk.full(), pk)

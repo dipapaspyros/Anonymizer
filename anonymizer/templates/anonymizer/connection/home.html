@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 
+{% block title %}Home{% endblock %}
+
 {% block content %}
-    <h1>CloudTeams Anonymizer</h1>
-    <em>publish you data/protect your users</em>
+    <h1>NTUA Anonymizer</h1>
+    <p><em>publish you data/protect your users</em></p>
 
     {% include "anonymizer/connection/configuration/list.html" %}
 
-    <p><a href="/team-ideation-tools/anonymizer/connection/create/">+ Add configuration</a></p>
+    <p><a href="/anonymizer/connection/create/">+ Add configuration</a></p>
 
 {% endblock %}

@@ -1,3 +1,11 @@
+.hidden {
+    display: none;
+}
+
+.pull-right {
+    float: right;
+}
+
 .configuration-teaser .content {
     padding-left: 40px
 }
@@ -12,12 +20,24 @@
     color: #7d3c8c;
 }
 
+.remove-form {
+    cursor: pointer;
+}
+
 input, select {
     color: #999;
 }
 
 select option {
     color: #777;
+}
+
+.column-form {
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    background: #7f8c8d;
+    box-shadow: 0 0 10px #777;
 }
 
 /*.switch-button-label.on,
@@ -32,4 +52,15 @@ select option {
 
 .activation-form input[type="submit"]:hover {
     background: #fff;
+}
+
+
+/* Console */
+#test-console {
+    width: 100%;
+    height: 500px;
+    background: #333;
+    color: #fff;
+    outline: none;
+    font-family: 'Inconsolata', monospace;
 }

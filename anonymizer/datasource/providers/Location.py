@@ -17,6 +17,9 @@ def get_address_info(address):
     """
     api_key = 'AIzaSyB5sKctUXR02OXbxJ5WQOXn_ehJLYWpzTI'
 
+    if address is None:
+        return None
+
     if address in address_info_cache:
         return address_info_cache[address]
     else:

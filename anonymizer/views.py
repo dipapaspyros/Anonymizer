@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from functools import partial, wraps
 import json
 import datetime
@@ -56,7 +58,7 @@ def sqlite3_info(request, pk):
             '''
             config.save()
 
-            return redirect('/team-ideation-tools/anonymizer/connection/%d/suggest-user-table/' % config.pk)
+            return redirect('/anonymizer/connection/%d/suggest-user-table/' % config.pk)
         else:
             status = 400
             params['form'] = form
@@ -87,7 +89,7 @@ def mysql_info(request, pk):
             '''
             config.save()
 
-            return redirect('/team-ideation-tools/anonymizer/connection/%d/suggest-user-table/' % config.pk)
+            return redirect('/anonymizer/connection/%d/suggest-user-table/' % config.pk)
         else:
             status = 400
             params['form'] = form
@@ -118,7 +120,7 @@ def postgres_info(request, pk):
             '''
             config.save()
 
-            return redirect('/team-ideation-tools/anonymizer/connection/%d/suggest-user-table/' % config.pk)
+            return redirect('/anonymizer/connection/%d/suggest-user-table/' % config.pk)
         else:
             status = 400
             params['form'] = form
@@ -157,7 +159,7 @@ def suggest_users_table(request, pk):
             # save changes
             config.save()
 
-            return redirect('/team-ideation-tools/anonymizer/connection/%d/select-columns/' % config.pk)
+            return redirect('/anonymizer/connection/%d/select-columns/' % config.pk)
         else:
             status = 400
             params['form'] = form
@@ -283,7 +285,7 @@ def select_columns(request, pk):
             config.properties = json.dumps(properties)
             config.save()
 
-            return redirect('/team-ideation-tools/anonymizer/')
+            return redirect('/anonymizer/')
         else:
             status = 400
             params['formset'] = formset
@@ -306,7 +308,7 @@ def set_active(request, pk):
 
             cc.save()
 
-        return redirect('/team-ideation-tools/anonymizer/')
+        return redirect('/anonymizer/')
     else:
         return HttpResponse('Only POST method allowed', status=400)
 
@@ -352,7 +354,8 @@ def query_connection(request, pk):
     result = ''
 
     if q:
-        try:
+        if True:
+        #try:
             if q.startswith('all()'):
                 _, start, end = parse_filters(q)
 
@@ -371,7 +374,7 @@ def query_connection(request, pk):
             elif q == 'properties':
                 return JsonResponse(user_manager.list_filters(), safe=False)
             elif q == 'help':
-                result = """
+                result = u"""
     Commands:
         - all(): Fetch all records
         - filter(some_filter): Fetch records based on `some_filter`
@@ -386,12 +389,13 @@ def query_connection(request, pk):
 """
 
                 for f in user_manager.list_filters():
-                    result += "        %s" % f['name']
+                    result += u"        %s" % f['name']
                     if f['has_options']:
                         result += ' / options: '
                         options_info = []
+
                         for o in f['get_options']:
-                            options_info.append('%s (%s)' % (o[0], o[1]))
+                            options_info.append(u'%s%s' % (o[0], (' (%s)' % o[1]) if o[1] != o[0] else ''))
 
                         result += ','.join(options_info)
 
@@ -402,9 +406,9 @@ def query_connection(request, pk):
             if q != 'help':
                 result = simplejson.dumps(result, indent=4)
 
-        except Exception as e:
-            status = 400
-            result = str(e)
+        #except Exception as e:
+        #    status = 400
+        #    result = str(e)
 
     return HttpResponse(result, status=status)
 
@@ -421,7 +425,7 @@ class ConnectionConfigurationManualDeleteView(DeleteView):
     model = ConnectionConfiguration
     template_name = 'anonymizer/connection/delete.html'
     context_object_name = 'configuration'
-    success_url = '/team-ideation-tools/anonymizer/'
+    success_url = '/anonymizer/'
 
 
 delete_view = ConnectionConfigurationManualDeleteView.as_view()

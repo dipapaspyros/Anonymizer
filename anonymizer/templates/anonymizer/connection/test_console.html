@@ -3,10 +3,10 @@
 {% load static from staticfiles %}
 
 {% block content %}
-    <h1>{{configuration.name}} - Test console</h1>
+    <h1>Connection "{{configuration.name}}" - Test console</h1>
 
     <textarea id="test-console" spellcheck="false">Type help to see commands&#13;&#10;$</textarea>
-    <a href="/team-ideation-tools/anonymizer/" class="btn btn-default">Back</a>
+    <a href="/anonymizer/" class="btn btn-default">Back</a>
 {% endblock %}
 
 {% block js %}
