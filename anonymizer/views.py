@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import traceback
 from functools import partial, wraps
 import json
 import datetime
@@ -354,8 +355,7 @@ def query_connection(request, pk):
     result = ''
 
     if q:
-        if True:
-        #try:
+        try:
             if q.startswith('all()'):
                 _, start, end = parse_filters(q)
 
@@ -404,11 +404,13 @@ def query_connection(request, pk):
                 raise Exception('Unknown command: %s' % q)
 
             if q != 'help':
-                result = simplejson.dumps(result, indent=4)
+                result = simplejson.dumps(result, indent=4, ensure_ascii=False)
 
-        #except Exception as e:
-        #    status = 400
-        #    result = str(e)
+        except Exception as e:
+            print(traceback.format_exc())
+
+            status = 400
+            result = str('Backend error')
 
     return HttpResponse(result, status=status)
 

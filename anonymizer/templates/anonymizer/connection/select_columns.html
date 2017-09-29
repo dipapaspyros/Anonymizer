@@ -6,7 +6,7 @@
 
 {% block content %}
     <h1>Select your data</h1>
-    <h2>Select the required information</h2>
+    <p>Select the information that will be exposed</p>
 
     <form method="POST" action=".">{% csrf_token %}
         {{formset.non_form_errors}}

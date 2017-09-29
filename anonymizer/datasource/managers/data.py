@@ -219,7 +219,6 @@ class Property:
                     else:
                         label = option
 
-
                     self.options.append((option, label))
 
         return self.options
@@ -236,7 +235,7 @@ class Property:
             else:  # @param style
                 result = self.aggregate.replace(param_str, result)
 
-        if self.table != self.property_manager.user_pk.table:
+        if self.table != self.property_manager.user_pk.table and not self.aggregate:
             result = 'array_agg(%s)' % result  # POSTGRES-only!! TODO investigate
 
         return result
@@ -544,7 +543,7 @@ class PropertyManager:
                     start = 0
                     limit = end
 
-                result += ' OFFSET %d LIMIT %d' % (start, limit)
+                result += ' LIMIT %d' % limit
 
         return result
 

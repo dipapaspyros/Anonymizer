@@ -46,36 +46,24 @@ def part_of_day(*args):
     if not t:
         return None
 
-    if type(t) != list:
-        ts = [t]
+    if t:
+        if type(t) != datetime:
+            try:
+                t = parser.parse(t)
+            except ValueError:
+                raise ValueError('%s can not be parsed into a valid datetime' % ts)
+
+        pos = len(DAY_PERIODS) - 1
+        for idx in range(len(DAY_PERIODS) - 1):
+            if DAY_PERIODS[idx + 1]['hour'] > t.hour:
+                pos = idx
+                break
+
+        r = DAY_PERIODS[pos]['name']
     else:
-        ts = t
-        result = []
+        r = None
 
-    for t in ts:
-        if t:
-            if type(t) != datetime:
-                try:
-                    t = parser.parse(t)
-                except ValueError:
-                    raise ValueError('%s can not be parsed into a valid datetime' % ts)
-
-            pos = len(DAY_PERIODS) - 1
-            for idx in range(len(DAY_PERIODS) - 1):
-                if DAY_PERIODS[idx + 1]['hour'] > t.hour:
-                    pos = idx
-                    break
-
-            r = DAY_PERIODS[pos]['name']
-        else:
-            r = None
-
-        if type(ts) != list:
-            return r
-        else:
-            result.append(r)
-
-    return result
+    return r
 
 
 def part_of_day_from_hour(*args):

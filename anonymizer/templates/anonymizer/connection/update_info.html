@@ -1,11 +1,22 @@
 {% extends "base.html" %}
 
+{% block title %}Connection information{% endblock %}
 {% block content %}
-    <h1>Connection information</h1>
 
-    <form method="POST" action=".">{% csrf_token %}
-        {{form.as_p}}
-        <input type="submit" value="Continue" />
-    </form>
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <h1 style="margin-bottom: 40px;">Connection information</h1>
+
+            <form method="POST" action=".">{% csrf_token %}
+
+                {% include 'util/form-fields.html' %}
+
+                <button type="submit" class="btn btn-primary pull-right">
+                    Continue <i class="fa fa-caret-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
 
 {% endblock %}
