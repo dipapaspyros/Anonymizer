@@ -51,7 +51,7 @@ def part_of_day(*args):
             try:
                 t = parser.parse(t)
             except ValueError:
-                raise ValueError('%s can not be parsed into a valid datetime' % ts)
+                raise ValueError('%s can not be parsed into a valid datetime' % t)
 
         pos = len(DAY_PERIODS) - 1
         for idx in range(len(DAY_PERIODS) - 1):
