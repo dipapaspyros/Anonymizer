@@ -6,14 +6,17 @@
     <h1>Connection "{{configuration.name}}" - Test console</h1>
 
     <textarea id="test-console" spellcheck="false">Type help to see commands&#13;&#10;$</textarea>
-    <a href="/anonymizer/" class="btn btn-default">Back</a>
+    <a href="/anonymizer/" class="btn btn-primary">Back</a>
 {% endblock %}
 
 {% block js %}
     <script src="{% static "anonymizer/js/console.js" %}"></script>
     <script>
         $(function() {
-            ConfigurationConsole.start({{configuration.id}});
+            new TestConsole({
+                $target: $('#test-console'),
+                consoleId: {{configuration.id}}
+            });
         });
     </script>
 {% endblock %}

@@ -622,25 +622,10 @@ class PropertyManager:
         return res
 
     def all(self, true_id=False, start=None, end=None):
-        # construct query
-        t = datetime.now()
-        query = self.query() + self.group_by() + self.order_by() + self.paginate(start, end)
-        print query
-        t2 = datetime.now(); print 'Create SQL: ' + str(t2 - t); t = t2
-
-        # execute query & return results
-        qs = self.user_pk.connection.execute(query).fetchall()
-        t2 = datetime.now(); print 'Running SQL: ' + str(t2 - t); t = t2
-        random.seed(self.token)  # use the token as a seed to get the same results for the same token
-        res = [self.info(row, true_id) for row in qs]
-        t2 = datetime.now(); print 'Anonymizing: ' + str(t2 - t); t = t2
-
-        return self.flatten(res)
+        return self.filter(filters=[], true_id=true_id, start=start, end=end)
 
     def filter(self, filters, true_id=False, start=None, end=None):
         t = datetime.now()
-        if not filters:
-            return self.all(true_id=true_id, start=start, end=end)
 
         if type(filters) in [str, unicode]:
             if filters[0] == '[':
@@ -648,7 +633,7 @@ class PropertyManager:
 
         # create where clause
         if not type(filters) == list:
-            filters = filters.replace(' and ', ' AND ').split(' AND ')
+            filters = [filter for filter in [f.strip() for f in filters.split(',')] if filter]
 
         # separate filters between those on simple columns and those on aggregates
         filters_generated = []
@@ -711,11 +696,14 @@ class PropertyManager:
         result = [self.info(row, true_id) for row in qs]
         t2 = datetime.now(); print 'Anonymizing: ' + str(t2 - t); t = t2
 
+        # flatten
+        result = self.flatten(result)
+
         # filter by generated fields & return result
-        res = self.filter_by_generated(result, filters_generated)
+        result = self.filter_by_generated(result, filters_generated)
         t2 = datetime.now(); print 'Filtering: ' + str(t2 - t); t = t2
 
-        return self.flatten(res)
+        return result
 
     def get(self, pk):
         where_clause = 'WHERE {0}={1}'.format(self.user_pk.full(), pk)
