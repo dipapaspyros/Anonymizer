@@ -8,6 +8,7 @@ from lists import DATABASE_CONNECTION_TYPES
 
 class ConnectionConfiguration(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    created = models.DateTimeField(auto_now_add=True)
     connection_type = models.CharField(max_length=128, choices=DATABASE_CONNECTION_TYPES)
     info = models.CharField(max_length=8128)
 
@@ -93,3 +94,18 @@ class ConnectionConfiguration(models.Model):
             self.is_active = True
 
         super(ConnectionConfiguration, self).save(*args, **kwargs)
+
+
+class ConnectionAccessKey(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    connection = models.ForeignKey(ConnectionConfiguration, related_name='access_keys')
+    is_active = models.BooleanField(default=True)
+    name = models.TextField()
+    key = models.TextField()
+    last_used = models.DateTimeField(blank=True, null=True, default=None)
+
+    def save(self, *args, **kwargs):
+        if not self.key:
+            self.key = ''.join(uuid.uuid4().__str__().split('-')[0:2])
+
+        super(ConnectionAccessKey, self).save(*args, **kwargs)
