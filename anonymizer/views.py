@@ -12,7 +12,7 @@ import simplejson
 from anonymizer.lists import PROVIDER_PLUGINS
 from forms import ConnectionConfigurationForm, Sqlite3ConnectionForm, MySQLConnectionForm, UserTableSelectionForm, \
     ColumnForm, validate_unique_across, PostgresConnectionForm
-from models import ConnectionConfiguration
+from models import ConnectionConfiguration, ConnectionAccessKey
 
 # patch simplejson library to serialize datetimes
 simplejson.JSONEncoder.default = lambda self, obj: (obj.isoformat() if isinstance(obj, datetime.datetime) else None)
@@ -442,3 +442,83 @@ class ConnectionConfigurationManualDeleteView(DeleteView):
 
 
 delete_view = ConnectionConfigurationManualDeleteView.as_view()
+
+
+def access_keys(request, pk):
+    """
+    Activates a configuration
+    """
+    configuration = get_object_or_404(ConnectionConfiguration, pk=pk)
+
+    if request.method == 'POST':
+        key_name = request.POST.get('key_name', '')
+        ConnectionAccessKey.objects.create(name=key_name, connection=configuration)
+
+        return redirect('/anonymizer/connection/%d/access-keys/' % configuration.pk)
+    else:
+        return render(request, 'anonymizer/connection/configuration/access_keys.html', {
+            'configuration': configuration
+        })
+
+
+def revoke_access_key(request, pk, key_id):
+    """
+    Activates a configuration
+    """
+    configuration = get_object_or_404(ConnectionConfiguration, pk=pk)
+    access_key = get_object_or_404(ConnectionAccessKey, pk=key_id)
+
+    if request.method == 'POST':
+        access_key.is_active = False
+        access_key.save()
+
+    return redirect('/anonymizer/connection/%d/access-keys/' % configuration.pk)
+
+
+def connnection_api_view(request, key, action='list'):
+    try:
+        access_key = ConnectionAccessKey.objects.get(key=key)
+    except ConnectionAccessKey.DoesNotExist:
+        return JsonResponse({
+            'error': 'Access key not found.'
+        }, status=404)
+
+    if not access_key.is_active:
+        return JsonResponse({
+            'error': 'This access key has been revoked.'
+        }, status=401)
+
+    if not access_key.connection.is_active:
+        return JsonResponse({
+            'error': 'This connection is no longer available.'
+        }, status=401)
+
+    # get filters
+    filters, _, __ = parse_filters(request.GET.get('filters', '').replace('~', '='))
+
+    # get offset & limit
+    try:
+        start = int(request.GET.get('offset', '0'))
+    except (ValueError, TypeError):
+        start = 0
+
+    try:
+        end = int(request.GET.get('limit')) + start
+    except (ValueError, TypeError):
+        end = None
+
+    user_manager = access_key.connection.get_user_manager(token=access_key.connection.pk)
+    status = 200
+    if action == 'list':
+        result = user_manager.filter(filters, start=start, end=end)
+    elif action == 'count':
+        result = {
+            'count': user_manager.count(filters)
+        }
+    else:
+        result = {
+            'error': 'Invalid action.'
+        }
+        status = 400
+
+    return JsonResponse(result, safe=False, status=status)

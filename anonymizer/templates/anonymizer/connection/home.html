@@ -4,10 +4,21 @@
 
 {% block content %}
     <h1>NTUA Anonymizer</h1>
-    <p><em>publish you data/protect your users</em></p>
+    <p><em>Exposing your data only the way you want</em></p>
+
+    <p>The NTUA Anonymizer makes it easier than ever to defined how other users can access your data. <br/>
+        It allows you to defined what data should be exposed to third parties and how they should be transformed
+        to ensure the anonymity of the exposed dataset -
+        basically allowing you to expose part of your data in a meaningful way, while ensuring details of your dataset can easily be hidden. <br>
+        If you have any questions about the NTUA Anonymizer, please <a href="mailto:dpap@epu.ntua.gr">contact us</a>.
+    </p>
+
+    <div class="row">
+        <div class="col-sm-3">
+            <a class="btn btn-default" href="/anonymizer/connection/create/"><i class="fa fa-database" style="margin: 0 10px 0 0;"></i> Add configuration</a>
+        </div>
+    </div>
 
     {% include "anonymizer/connection/configuration/list.html" %}
-
-    <p><a class="btn btn-default" href="/anonymizer/connection/create/"><i class="fa fa-database" style="margin: 0 10px 0 0;"></i> Add configuration</a></p>
 
 {% endblock %}

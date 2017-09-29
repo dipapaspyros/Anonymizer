@@ -2,12 +2,12 @@
 
 {% block title %}Access Keys{% endblock %}
 {% block content %}
-    <h1>Access Keys</h1>
+    <h1 style="margin-bottom: 40px;">Access Keys</h1>
 
     <p>Here you can manage the available access keys for the <b>{{ configuration.name }}</b> connection.</p>
-    <p>You have to provide external parties who want to access data
+    <p>External parties who want to access data must do this
         through the NTUA Anonymizer API with a valid access key.</p>
-    <p>You can disable access keys any time you want.</p>
+    <p>Access keys can be revoked at any time.</p>
     <p>You can entirely close this connection by deactivating it from the <a href="/anonymizer/">Home page</a>.</p>
 
     {% if not configuration.is_active %}
@@ -16,14 +16,28 @@
         </p>
     {% endif %}
 
+    {% if configuration.is_active %}
+        <form method="POST" action="/anonymizer/connection/{{configuration.pk}}/access-keys/">
+            {% csrf_token %}
+            <div class="row" style="margin-bottom: 30px;">
+                <div class="col-sm-3">
+                    <input type="text" name="key_name" placeholder="Key label" class="form-control border-input" />
+                </div>
+                <div class="col-sm-3">
+                    <button class="btn btn-primary"><i class="fa fa-plus"></i> Create new key</button>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+
     {% with access_keys=configuration.access_keys.all %}
         <table class="table">
             <tr>
                 <th>Name</th>
                 <th>Created</th>
                 <th>Key</th>
+                <th>Status</th>
                 <th>Last usage</th>
-                <th>Active</th>
                 <th>Actions</th>
             </tr>
             {% for access_key in access_keys %}
@@ -33,21 +47,33 @@
                     <td style="font-family: Inconsolata, monospace;">{{ access_key.key }}</td>
                     <td>
                         {% if access_key.is_active %}
-                            <i class="fa fa-check o-green"></i>
+                            <i class="fa fa-check o-green"></i> Active
                         {% else %}
-                            <i class="fa fa-ban o-red"></i>
+                            <i class="fa fa-ban o-red"></i> Revoked
+                        {% endif %}
+                    </td>
+                    <td>{{ access_key.last_used|default:"Never" }}</td>
+                    <td>
+                        {% if access_key.is_active %}
+                            <form method="POST" action="/anonymizer/connection/{{configuration.pk}}/access-keys/{{ access_key.pk }}/revoke/">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-danger">Revoke</button>
+                            </form>
+                        {% else %}
+                            -
                         {% endif %}
                     </td>
                 </tr>
             {% empty %}
+                <tr>
+                    <td>No access keys have been created</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
             {% endfor %}
         </table>
-
-        <form method="POST" action=".">{% csrf_token %}
-            <p>Are you sure you want to delete {{configuration.name}}? This action can not be undone.</p>
-
-            <a class="btn btn-default" href="/anonymizer/">Cancel</a>
-            <input type="submit" class="btn btn-danger" value="Delete" />
-        </form>
     {% endwith %}
 {% endblock %}
