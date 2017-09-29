@@ -10,8 +10,16 @@
     color: #c0392b;
 }
 
-.configuration-teaser .content {
-    padding-left: 40px
+.configuration-teaser {
+    margin: 40px 0;
+}
+
+.configuration-teaser h5 {
+    font-size: 16px;
+}
+
+.configuration-teaser .btn {
+    min-width: 100px;
 }
 
 .activation-form {

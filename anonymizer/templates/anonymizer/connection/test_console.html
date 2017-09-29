@@ -3,6 +3,15 @@
 {% load static from staticfiles %}
 
 {% block title %}Connection console{% endblock %}
+
+{% block css %}
+    <style>
+        html {
+            overflow-y: hidden;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <h1>Connection "{{configuration.name}}" - Test console</h1>
 

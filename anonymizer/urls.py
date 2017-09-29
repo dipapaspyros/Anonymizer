@@ -22,6 +22,7 @@ urlpatterns = [
 
     # change active configuration
     url(r'^connection/(?P<pk>\d+)/set-active/$', views.set_active),
+    url(r'^connection/(?P<pk>\d+)/set-inactive/$', views.set_inactive),
 
     # query & console to run them
     url(r'^connection/(?P<pk>\d+)/query/$', views.query_connection),

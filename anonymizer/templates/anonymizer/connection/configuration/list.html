@@ -1,10 +1,8 @@
 {% if configurations %}
     <h4 style="margin: 40px 0 20px 0;">Existing configurations</h4>
-    <ul>
-        {% for configuration in configurations %}
-            <li>{% include "anonymizer/connection/configuration/teaser.html" %}</li>
-        {% endfor %}
-    </ul>
+    {% for configuration in configurations %}
+        {% include "anonymizer/connection/configuration/teaser.html" %}
+    {% endfor %}
 {% else %}
     <p>No configurations found</p>
 {% endif %}

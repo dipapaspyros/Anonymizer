@@ -296,18 +296,28 @@ def select_columns(request, pk):
 
 def set_active(request, pk):
     """
-    Changes the active configuration
+    Activates a configuration
     """
     if request.method == 'POST':
         target = get_object_or_404(ConnectionConfiguration, pk=pk)
 
-        for cc in ConnectionConfiguration.objects.all():
-            if cc == target:
-                cc.is_active = True
-            else:
-                cc.is_active = False
+        target.is_active = True
+        target.save()
 
-            cc.save()
+        return redirect('/anonymizer/')
+    else:
+        return HttpResponse('Only POST method allowed', status=400)
+
+
+def set_inactive(request, pk):
+    """
+    Dectivates a configuration
+    """
+    if request.method == 'POST':
+        target = get_object_or_404(ConnectionConfiguration, pk=pk)
+
+        target.is_active = False
+        target.save()
 
         return redirect('/anonymizer/')
     else:
@@ -346,7 +356,7 @@ def query_connection(request, pk):
     status = 200
 
     config = get_object_or_404(ConnectionConfiguration, pk=pk)
-    user_manager = config.get_user_manager()
+    user_manager = config.get_user_manager(token=config.pk)
 
     if request.method != 'GET':
         return HttpResponse('Only GET requests are allowed', status=400)
@@ -366,10 +376,11 @@ def query_connection(request, pk):
 
                 filters = q[pos:f_end]
                 result = user_manager.filter(filters, start=start, end=end)
-            elif q.startswith('count'):
+            elif q.startswith('count('):
                 pos = len('count(')
-                filters = q[pos:-1]
+                f_end, start, end = parse_filters(q)
 
+                filters = q[pos:f_end]
                 result = user_manager.count(filters)
             elif q == 'properties':
                 return JsonResponse(user_manager.list_filters(), safe=False)
@@ -410,7 +421,7 @@ def query_connection(request, pk):
             print(traceback.format_exc())
 
             status = 400
-            result = str('Backend error')
+            result = str(e)
 
     return HttpResponse(result, status=status)
 

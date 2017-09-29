@@ -1,19 +1,31 @@
 <div class="configuration-teaser">
-    {{configuration.name}}
+    <h5>{{configuration.name}}</h5>
 
     <div class="content">
         {% if not configuration.is_active %}
             <form method="POST" action = '/anonymizer/connection/{{configuration.pk}}/set-active/' class="activation-form">
-                {% csrf_token %}
-                <input type="submit" value="Activate" />
-            </form>
-            |
         {% else %}
-            <span class="already-active">✓ Active</span>|
+            <form method="POST" action = '/anonymizer/connection/{{configuration.pk}}/set-inactive/' class="activation-form">
         {% endif %}
 
-        <a href="/anonymizer/connection/{{configuration.pk}}/console/">Query</a> |
-        <a href="/anonymizer/connection/{{configuration.pk}}/select-columns/">Edit</a> |
-        <a href="/anonymizer/connection/{{configuration.pk}}/delete/">Delete</a>
+            {% csrf_token %}
+
+            <div class="btn-group">
+                {% if not configuration.is_active %}
+                    <button type="submit" class="btn btn-sm btn-success">Activate</button>
+                {% else %}
+                    <button type="submit" class="btn btn-sm btn-default">Deactivate</button>
+                {% endif %}
+                <a href="/anonymizer/connection/{{configuration.pk}}/console/" class="btn btn-sm btn-info">
+                    <i class="fa fa-search"></i> Query
+                </a>
+                <a href="/anonymizer/connection/{{configuration.pk}}/select-columns/" class="btn btn-sm btn-primary">
+                    <i class="fa fa-pencil"></i> Edit
+                </a>
+                <a href="/anonymizer/connection/{{configuration.pk}}/delete/" class="btn btn-sm btn-danger">
+                    <i class="fa fa-times"></i> Delete
+                </a>
+            </div>
+        </form>
     </div>
 </div>
