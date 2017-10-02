@@ -627,7 +627,11 @@ class PropertyManager:
         t = datetime.now()
 
         if type(filters) in [str, unicode]:
-            if filters[0] == '[':
+            filters = filters.strip()
+
+            if filters == '':
+                filters = []
+            elif filters[0] == '[':
                 filters = [f.strip()[1:-1] for f in filters[1:-1].split(' AND ')]
 
         # create where clause

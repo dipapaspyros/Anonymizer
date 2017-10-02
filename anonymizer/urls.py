@@ -29,8 +29,8 @@ urlpatterns = [
     url(r'^connection/(?P<pk>\d+)/access-keys/(?P<key_id>\d+)/revoke/$', views.revoke_access_key),
 
     # api access
-    url(r'^api/(?P<key>[a-zA-Z0-9]+)/', views.connnection_api_view),
-    url(r'^api/(?P<key>[a-zA-Z0-9]+)/(?P<action>\s+/', views.connnection_api_view),
+    url(r'^api/(?P<key>[a-zA-Z0-9]+)/(?P<action>list|count)/', views.connnection_api_view),
+    url(r'^api/(?P<key>[a-zA-Z0-9]+)/$', views.connnection_api_view),
 
     # query & console to run them
     url(r'^connection/(?P<pk>\d+)/query/$', views.query_connection),

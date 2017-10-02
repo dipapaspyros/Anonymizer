@@ -494,7 +494,7 @@ def connnection_api_view(request, key, action='list'):
         }, status=401)
 
     # get filters
-    filters, _, __ = parse_filters(request.GET.get('filters', '').replace('~', '='))
+    filters = request.GET.get('filters', '').replace('~', '=')
 
     # get offset & limit
     try:
@@ -509,6 +509,7 @@ def connnection_api_view(request, key, action='list'):
 
     user_manager = access_key.connection.get_user_manager(token=access_key.connection.pk)
     status = 200
+
     if action == 'list':
         result = user_manager.filter(filters, start=start, end=end)
     elif action == 'count':
