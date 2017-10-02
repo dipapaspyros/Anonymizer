@@ -440,6 +440,9 @@ class PropertyManager:
         idx = 0
         result = {}
 
+        # use the token as a seed to get the same results for the same token/row pair
+        random.seed(self.token + row[idx])
+
         # fill property values from database
         for prop in self.properties:
             if not prop.is_generated():
@@ -685,28 +688,47 @@ class PropertyManager:
             query += having_clause
 
         # add offset & limit
-        query += self.order_by() + self.paginate(start, end)
+        query += self.order_by()
 
         # postgres fix
         query = query.replace('"', '\'')
-        print query
 
         # execute query & get results
-        t2 = datetime.now(); print 'Create SQL: ' + str(t2 - t); t = t2
-        qs = self.user_pk.connection.execute(query).fetchall()
-        t2 = datetime.now(); print 'Running SQL: ' + str(t2 - t); t = t2
-        random.seed(self.token)  # use the token as a seed to get the same results for the same token
-        result = [self.info(row, true_id) for row in qs]
-        t2 = datetime.now(); print 'Anonymizing: ' + str(t2 - t); t = t2
+        total_result = []
 
-        # flatten
-        result = self.flatten(result)
+        while True:
+            q = query + self.paginate(start, end)
 
-        # filter by generated fields & return result
-        result = self.filter_by_generated(result, filters_generated)
-        t2 = datetime.now(); print 'Filtering: ' + str(t2 - t); t = t2
+            t2 = datetime.now(); print 'Create SQL: ' + str(t2 - t); t = t2
+            qs = self.user_pk.connection.execute(q).fetchall()
+            t2 = datetime.now(); print 'Running SQL: ' + str(t2 - t); t = t2
 
-        return result
+            if not qs:
+                break
+
+            result = [self.info(row, true_id) for row in qs]
+            t2 = datetime.now(); print 'Anonymizing: ' + str(t2 - t); t = t2
+
+            # flatten
+            result = self.flatten(result)
+
+            # filter by generated fields & return result
+            result = self.filter_by_generated(result, filters_generated)
+            t2 = datetime.now(); print 'Filtering: ' + str(t2 - t); t = t2
+
+            total_result += result
+
+            # we might need more items for the database in case of filters on generated fields
+            if end is not None:
+                page_size = end - start
+                if len(total_result) > page_size:
+                    total_result = total_result[:end - start]
+                    break
+                else:
+                    start = end
+                    end = start + page_size
+
+        return total_result
 
     def get(self, pk):
         where_clause = 'WHERE {0}={1}'.format(self.user_pk.full(), pk)
