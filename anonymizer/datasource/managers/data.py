@@ -727,6 +727,8 @@ class PropertyManager:
                 else:
                     start = end
                     end = start + page_size
+            else:
+                break
 
         return total_result
 

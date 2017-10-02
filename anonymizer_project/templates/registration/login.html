@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Login to continue{% endblock %}
+
+{% block content %}
+    <div class="col-md-6" style="margin-top: 100px; margin-left: 20vw; text-align: center;">
+        <div class="card" style="padding: 20px; background: #333; color: #fff;">
+            <div class="header">
+                <h3 class="title text-center">Provide your Anonymizer credentials to login</h3>
+                <p>New accounts can be created through the
+                    <a href="/admin/" style="color: #fff; text-decoration: underline;">
+                        NTUA Anonymizer Admin
+                    </a>.
+                </p>
+            </div>
+            <div class="content">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% with full_row=True %}
+                        {% include 'util/form-fields.html' %}
+                    {% endwith %}
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-info btn-fill btn-wd">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

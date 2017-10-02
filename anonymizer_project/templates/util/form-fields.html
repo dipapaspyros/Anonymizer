@@ -6,7 +6,7 @@
 
 {% for field in form %}
     <div class="row">
-        <div class="{% if not full_row %}col-lg-6 {% endif %}col-xs-12 {% if centered %}col-lg-push-3{% endif %}">
+        <div class="{% if not full_row %}col-lg-6 {% endif %}col-sm-12">
             <div class="form-group">
                 {{ field.label_tag }}
                 {% if field.field.required %}

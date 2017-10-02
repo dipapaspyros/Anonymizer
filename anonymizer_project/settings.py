@@ -56,7 +56,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'anonymizer_project.middleware.AuthRequiredMiddleware',
 )
+
+LOGIN_REDIRECT_URL = '/anonymizer/'
 
 ROOT_URLCONF = 'anonymizer_project.urls'
 
